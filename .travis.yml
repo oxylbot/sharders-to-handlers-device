@@ -11,5 +11,8 @@ go:
 git:
   depth: 3
 
+install:
+ - sudo apt-get install libzmq libczmq libsodium
+
 script:
  - go build src/main.go
