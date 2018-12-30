@@ -11,9 +11,5 @@ go:
 git:
   depth: 3
 
-install:
- - sudo apt-get update
- - sudo apt-get install -y libzmq libczmq libsodium
-
 script:
- - go build src/main.go
+  - docker build -t shard_to_handlers:latest .
