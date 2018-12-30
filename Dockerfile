@@ -3,7 +3,7 @@ FROM golang:alpine
 ENV GOPATH /go
 ENV GOBIN /go/bin
 
-RUN apk add --no-cache git zeromq-dev libzmq libsodium-dev czmq czmq-dev build-base
+RUN apk add --no-cache libc-dev git zeromq-dev libzmq libsodium-dev czmq czmq-dev gcc pkgconf
 
 COPY . /app
 
