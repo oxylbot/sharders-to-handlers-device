@@ -1,0 +1,2 @@
+# sharders-to-handlers-device [![Build Status](https://travis-ci.com/oxylbot/sharders-to-handlers-device.svg?branch=master)](https://travis-ci.com/oxylbot/sharders-to-handlers-device)
+ZMQ device to redirect sharder message traffic to message-handlers. Mainly for binding purpouses.
