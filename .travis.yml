@@ -12,7 +12,8 @@ git:
   depth: 3
 
 install:
- - sudo apt-get install libzmq libczmq libsodium
+ - sudo apt-get update
+ - sudo apt-get install -y libzmq libczmq libsodium
 
 script:
  - go build src/main.go
