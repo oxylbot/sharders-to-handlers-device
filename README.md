@@ -24,3 +24,19 @@ These are the potential values of `INCOMING_TYPE` and `OUTGOING_TYPE` which dete
 | ZMQ_CLIENT  | 13      |
 | ZMQ_RADIO   | 14      |
 | ZMQ_DISH    | 15      |
+
+### Usage
+
+1. Build project either using Docker or `go build`
+2. Set all the required environment variables:
+    - `INCOMING_ADDRESS`
+    - `OUTGOING_ADDRESS`
+    - `INCOMING_TYPE` (see above)
+    - `OUTGOING_TYPE` (see above)
+3. Execute the binary
+4. Sockets will be listening until program is killed.
+
+### Requirements
+* libcmzq
+* libzmq
+* libsodium
