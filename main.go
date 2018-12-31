@@ -4,22 +4,46 @@ import (
 	"github.com/zeromq/goczmq"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 )
 
 func getAddresses() (string, string) {
-	shardersBind := os.Getenv("PUSH_ADDRESS")
-	handlersBind := os.Getenv("PULL_ADDRESS")
+	incomingBind := os.Getenv("INCOMING_ADDRESS")
+	outgoingBind := os.Getenv("OUTGOING_ADDRESS")
 
-	if shardersBind == "" || handlersBind == "" {
-		panic("PUSH_ADDRESS and PULL_ADDRESS are not both set, please check them")
+	if incomingBind == "" || outgoingBind == "" {
+		panic("INCOMING_ADDRESS and OUTGOING_ADDRESS are not both set, please check them")
 	}
 
-	return shardersBind, handlersBind;
+	return incomingBind, outgoingBind
+}
+
+func getTypes() (int, int) {
+	incomingTypeString := os.Getenv("INCOMING_TYPE")
+	outgoingTypeString := os.Getenv("OUTGOING_TYPE")
+
+	if incomingTypeString == "" || outgoingTypeString == "" {
+		panic("INCOMING_TYPE and OUTGOING_TYPE are not both set, please check them")
+	}
+
+	incomingType, err := strconv.Atoi(incomingTypeString)
+	if err != nil {
+		panic(err)
+	}
+
+	outgoingType, err := strconv.Atoi(outgoingTypeString)
+	if err != nil {
+		panic(err)
+	}
+
+	return incomingType, outgoingType
 }
 
 func main() {
-	shardersBind, handlersBind := getAddresses();
+	incomingBind, outgoingBind := getAddresses()
+	
+	incomingType, outgoingType := getTypes()
 
 	verboseLogging := os.Getenv("PROXY_DEBUG")
 
@@ -29,13 +53,13 @@ func main() {
 		proxy.Verbose()
 	}
 
-	err := proxy.SetBackend(goczmq.Push, shardersBind)
+	err := proxy.SetBackend(incomingType, incomingBind)
 	if err != nil {
 		proxy.Destroy()
 		panic(err)
 	}
 
-	err = proxy.SetFrontend(goczmq.Pull, handlersBind)
+	err = proxy.SetFrontend(outgoingType, outgoingBind)
 	if err != nil {
 		proxy.Destroy()
 		panic(err)
@@ -47,7 +71,7 @@ func main() {
 	proxy.Destroy()
 }
 
-func makeSignalChannel() (chan os.Signal) {
+func makeSignalChannel() chan os.Signal {
 	signalChannel := make(chan os.Signal, 1)
 
 	signal.Notify(signalChannel, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
