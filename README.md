@@ -1,4 +1,4 @@
-# zmq-proxy[![Build Status](https://travis-ci.com/oxylbot/zmq-proxy.svg?branch=master)](https://travis-ci.com/oxylbot/zmq-proxy)
+# zmq-proxy [![Build Status](https://travis-ci.com/oxylbot/zmq-proxy.svg?branch=master)](https://travis-ci.com/oxylbot/zmq-proxy)
 ZMQ device to redirect sharder message traffic to message-handlers. Mainly for binding purposes.
 
 
