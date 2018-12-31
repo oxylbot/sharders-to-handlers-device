@@ -9,6 +9,7 @@ import (
 )
 
 func getAddresses() (string, string) {
+	// Get the addresses from the env, in format tcp://x.x.x.x:y
 	incomingBind := os.Getenv("INCOMING_ADDRESS")
 	outgoingBind := os.Getenv("OUTGOING_ADDRESS")
 
@@ -20,6 +21,7 @@ func getAddresses() (string, string) {
 }
 
 func getTypes() (int, int) {
+	// Get the types of socket
 	incomingTypeString := os.Getenv("INCOMING_TYPE")
 	outgoingTypeString := os.Getenv("OUTGOING_TYPE")
 
@@ -27,6 +29,7 @@ func getTypes() (int, int) {
 		panic("INCOMING_TYPE and OUTGOING_TYPE are not both set, please check them")
 	}
 
+	// Convert to int in preparation of sending to CZMQ
 	incomingType, err := strconv.Atoi(incomingTypeString)
 	if err != nil {
 		panic(err)
@@ -47,33 +50,41 @@ func main() {
 
 	verboseLogging := os.Getenv("PROXY_DEBUG")
 
+	// Construct CZMQ proxy
 	proxy := goczmq.NewProxy()
 
 	if verboseLogging == "1" {
+		// Set debug logging on
 		proxy.Verbose()
 	}
 
+	// incomingType is as documented in README.md
 	err := proxy.SetBackend(incomingType, incomingBind)
 	if err != nil {
 		proxy.Destroy()
 		panic(err)
 	}
 
+	// outgoingType is as documented in README.md
 	err = proxy.SetFrontend(outgoingType, outgoingBind)
 	if err != nil {
 		proxy.Destroy()
 		panic(err)
 	}
 
+	// Block until one of the signals listened for is received
 	signalChannel := makeSignalChannel()
 	<- signalChannel
 
+	// Close proxy and exit
 	proxy.Destroy()
 }
 
 func makeSignalChannel() chan os.Signal {
+	// Make a channel for signals
 	signalChannel := make(chan os.Signal, 1)
 
+	// Notify on SIGINT, SIGTERM and interrupts
 	signal.Notify(signalChannel, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 
 	return signalChannel
