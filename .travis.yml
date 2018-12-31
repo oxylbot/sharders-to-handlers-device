@@ -3,19 +3,13 @@ sudo: required
 services:
  - docker
 
-language: node_js
-node_js:
- - "10.12.0"
-cache: npm
+language: minimal
 
 git:
   depth: 3
 
-env:
- - NODE_ENV=development
-
-install:
- - npm install
-
 script:
- - eslint . --quiet
+  # Confirm we can build
+  - docker build -t shard_to_handlers:latest .
+  # Lint the project
+  - docker run -it shard_to_handlers:latest scripts/test.sh

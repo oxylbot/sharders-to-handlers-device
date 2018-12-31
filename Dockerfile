@@ -1,13 +1,18 @@
-FROM node:10.12.0-jessie
+FROM golang:alpine
 
-ARG NODE_ENV
+ENV GOPATH /go
+ENV GOBIN /go/bin
 
-ENV NODE_ENV=${NODE_ENV}
+RUN apk add --no-cache libc-dev git zeromq-dev libzmq libsodium-dev czmq czmq-dev gcc pkgconf
 
 COPY . /app
 
 WORKDIR /app
 
-RUN npm install --production
+RUN go get github.com/zeromq/goczmq
 
-CMD ["npm", "start"]
+RUN go install
+
+RUN go build main.go
+
+CMD ["./main"]
