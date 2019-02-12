@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"github.com/zeromq/goczmq"
 	"os"
 	"os/signal"
@@ -45,15 +46,17 @@ func getTypes() (int, int) {
 
 func main() {
 	incomingBind, outgoingBind := getAddresses()
-	
+
 	incomingType, outgoingType := getTypes()
 
-	verboseLogging := os.Getenv("PROXY_DEBUG")
+	verbosePtr := flag.Bool("verbose", false, "Enable verbose logging")
+
+	flag.Parse()
 
 	// Construct CZMQ proxy
 	proxy := goczmq.NewProxy()
 
-	if verboseLogging == "1" {
+	if *verbosePtr == true {
 		// Set debug logging on
 		proxy.Verbose()
 	}
@@ -74,7 +77,7 @@ func main() {
 
 	// Block until one of the signals listened for is received
 	signalChannel := makeSignalChannel()
-	<- signalChannel
+	<-signalChannel
 
 	// Close proxy and exit
 	proxy.Destroy()
