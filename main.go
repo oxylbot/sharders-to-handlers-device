@@ -46,14 +46,14 @@ func getTypes() (int, int) {
 }
 
 func main() {
-	incomingBind, outgoingBind := getAddresses()
-
-	incomingType, outgoingType := getTypes()
-
 	verbosePtr := flag.Bool("verbose", false, "Enable verbose logging")
 	captureAddr := flag.String("capture", "", "Start a PUSH bound to this address")
 
 	flag.Parse()
+
+	incomingBind, outgoingBind := getAddresses()
+
+	incomingType, outgoingType := getTypes()
 
 	// Construct CZMQ proxy
 	proxy := goczmq.NewProxy()
