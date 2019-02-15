@@ -2,11 +2,12 @@ package main
 
 import (
 	"flag"
-	"github.com/zeromq/goczmq"
 	"os"
 	"os/signal"
 	"strconv"
 	"syscall"
+
+	"github.com/zeromq/goczmq"
 )
 
 func getAddresses() (string, string) {
@@ -45,13 +46,14 @@ func getTypes() (int, int) {
 }
 
 func main() {
+	verbosePtr := flag.Bool("verbose", false, "Enable verbose logging")
+	captureAddr := flag.String("capture", "", "Start a PUSH bound to this address")
+
+	flag.Parse()
+
 	incomingBind, outgoingBind := getAddresses()
 
 	incomingType, outgoingType := getTypes()
-
-	verbosePtr := flag.Bool("verbose", false, "Enable verbose logging")
-
-	flag.Parse()
 
 	// Construct CZMQ proxy
 	proxy := goczmq.NewProxy()
@@ -59,6 +61,11 @@ func main() {
 	if *verbosePtr == true {
 		// Set debug logging on
 		proxy.Verbose()
+	}
+
+	if *captureAddr != "" {
+		// Set the capture mode
+		proxy.SetCapture(*captureAddr)
 	}
 
 	// incomingType is as documented in README.md
