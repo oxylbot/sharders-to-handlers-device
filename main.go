@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"log"
 	"os"
 	"os/signal"
 	"strconv"
@@ -16,7 +17,9 @@ func getAddresses() (string, string) {
 	outgoingBind := os.Getenv("OUTGOING_ADDRESS")
 
 	if incomingBind == "" || outgoingBind == "" {
-		panic("INCOMING_ADDRESS and OUTGOING_ADDRESS are not both set, please check them")
+		// If we have a missing address we should exit
+		log.Println("INCOMING_ADDRESS and OUTGOING_ADDRESS are not both set, please check them")
+		os.Exit(1)
 	}
 
 	return incomingBind, outgoingBind
@@ -28,7 +31,9 @@ func getTypes() (int, int) {
 	outgoingTypeString := os.Getenv("OUTGOING_TYPE")
 
 	if incomingTypeString == "" || outgoingTypeString == "" {
-		panic("INCOMING_TYPE and OUTGOING_TYPE are not both set, please check them")
+		// If we have a missing type we should exit
+		log.Println("INCOMING_TYPE and OUTGOING_TYPE are not both set, please check them")
+		os.Exit(1)
 	}
 
 	// Convert to int in preparation of sending to CZMQ
@@ -46,9 +51,13 @@ func getTypes() (int, int) {
 }
 
 func main() {
+	// -verbose enables the proxy.Verbose() logging
 	verbosePtr := flag.Bool("verbose", false, "Enable verbose logging")
+
+	// -capture tcp://*:xxxx/ sets up a push socket to capture all traffic going through the proxy on
 	captureAddr := flag.String("capture", "", "Start a PUSH bound to this address")
 
+	// Parse command line arguments
 	flag.Parse()
 
 	incomingBind, outgoingBind := getAddresses()
